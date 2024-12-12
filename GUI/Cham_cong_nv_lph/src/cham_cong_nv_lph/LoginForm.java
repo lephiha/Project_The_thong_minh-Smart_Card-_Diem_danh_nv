@@ -126,6 +126,11 @@ public class LoginForm extends javax.swing.JFrame {
                 btnConnectMouseClicked(evt);
             }
         });
+        btnConnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConnectActionPerformed(evt);
+            }
+        });
         getContentPane().add(btnConnect, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 540, 350, -1));
 
         jlbLogin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Trang.jpg"))); // NOI18N
@@ -199,6 +204,10 @@ public class LoginForm extends javax.swing.JFrame {
         // TODO add your handling code here:
         new AdminForm().setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnConnectActionPerformed
 
     /**
      * @param args the command line arguments

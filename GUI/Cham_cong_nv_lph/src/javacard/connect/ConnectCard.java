@@ -35,6 +35,7 @@ public class ConnectCard {
     public String strDate;
     public String strPhone;
     
+    private static final byte INS_SAVE_ATTENDANCE_LOG = (byte) 0x70;
     private Card card;
     private TerminalFactory factory;
     public CardChannel channel;
@@ -445,4 +446,15 @@ public class ConnectCard {
         return null;
     }
     
+    public String saveAttendanceLog(String id, String name, String date, String phone) {
+    try {
+        byte[] data = (id + ";" + name + ";" + date + ";" + phone).getBytes();
+        CommandAPDU command = new CommandAPDU(0xB0, INS_SAVE_ATTENDANCE_LOG, 0x00, 0x00, data);
+        ResponseAPDU response = channel.transmit(command);
+        return response.getSW() == 0x9000 ? "Lưu thành công" : "Lưu thất bại";
+    } catch (Exception e) {
+        return "Error: " + e.getMessage();
+    }
+}
+
 }

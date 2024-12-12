@@ -18,6 +18,11 @@ public class LPH_diem_danh_nv extends Applet
 	// CLA
     final static byte LPH_diem_danh_nv_CLA =(byte)0xB0;
     /** test v TESTCHECK  kim tra pin sau khi thay i*/
+    // Mng lu lch s im danh
+	private static final short MAX_LOG_ENTRIES = 50; // S lng lch s ti a
+	private byte[] attendanceLogs = new byte[MAX_LOG_ENTRIES * 50]; // Mng 1 chiu lu tt c bn ghi, mi bn ghi 50 byte
+	private short logCount = 0;
+	private final static byte INS_SAVE_ATTENDANCE_LOG = (byte) 0x70;
     //Kch thc m pin
 	private final static byte PIN_MIN_SIZE = (byte) 4;
 	private final static byte PIN_MAX_SIZE = (byte) 16;
@@ -166,6 +171,18 @@ public class LPH_diem_danh_nv extends Applet
 	{
 		LPH_diem_danh_nv wal = new LPH_diem_danh_nv(bArray, bOffset, bLength);
 	}
+	
+	private void saveAttendanceLog(byte[] buffer, short offset, short length) {
+    if (logCount >= MAX_LOG_ENTRIES) {
+        // Nu y, ghi è lên bn ghi c nht
+        logCount = 0;
+    }
+
+    short startIndex = (short)(logCount * 50); // Tính toán v trí bt u ca bn ghi hin ti trong mng
+    Util.arrayCopyNonAtomic(buffer, offset, attendanceLogs, startIndex, length);
+    logCount++;
+}
+
 
 	public void process(APDU apdu)
 	{
@@ -233,6 +250,9 @@ public class LPH_diem_danh_nv extends Applet
 		// case INS_GEN_KEYPAIR:
 			// GenerateKeyPair(apdu, buffer);
 			//break;
+		case INS_SAVE_ATTENDANCE_LOG:
+            saveAttendanceLog(buffer, ISO7816.OFFSET_CDATA, apdu.setIncomingAndReceive());
+            break;
 		default:
 			ISOException.throwIt(ISO7816.SW_INS_NOT_SUPPORTED);
 		}
