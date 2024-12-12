@@ -76,19 +76,28 @@ public class HomeForm extends javax.swing.JFrame {
         showDate();
         showTime();
        // Khởi tạo JTextArea để hiển thị lịch sử
-    attendanceHistoryArea = new JTextArea();
-    attendanceHistoryArea.setEditable(false);
-    attendanceHistoryArea.setRows(10);
-    attendanceHistoryArea.setColumns(30);
-    attendanceHistoryArea.setLineWrap(true);
+        attendanceHistoryArea = new JTextArea();
+        attendanceHistoryArea.setEditable(false);
+        attendanceHistoryArea.setRows(10);
+        attendanceHistoryArea.setColumns(30);
+        attendanceHistoryArea.setLineWrap(true);
 
-    // Đặt JTextArea vào JScrollPane
-    JScrollPane scrollPane = new JScrollPane(attendanceHistoryArea);
-    scrollPane.setBounds(30, 100, 300, 200); // Điều chỉnh vị trí và kích thước theo yêu cầu của bạn
+        // Đặt JTextArea vào JScrollPane
+        JScrollPane scrollPane = new JScrollPane(attendanceHistoryArea);
+        // Lấy kích thước màn hình (hoặc container chứa JScrollPane)
+        int panelWidth = getWidth();
+        int panelHeight = getHeight();
 
-    // Sử dụng AbsoluteLayout
-    getContentPane().setLayout(null); // Nếu chưa thiết lập, dùng LayoutManager null (AbsoluteLayout)
-    getContentPane().add(scrollPane);
+        // Tính toán vị trí để căn giữa
+        int x = (panelWidth - 300) / 2+ 60;  // Tính toán vị trí x để căn giữa theo chiều ngang
+        int y = (panelHeight - 200) / 2 + 100;  // Tính toán vị trí y để căn giữa theo chiều dọc
+
+        // Đặt vị trí và kích thước cho scrollPane
+        scrollPane.setBounds(x, y, 300, 200);
+
+        // Sử dụng AbsoluteLayout
+        getContentPane().setLayout(null); 
+        getContentPane().add(scrollPane);
     }
     void showDate(){
         Date date = new Date();
