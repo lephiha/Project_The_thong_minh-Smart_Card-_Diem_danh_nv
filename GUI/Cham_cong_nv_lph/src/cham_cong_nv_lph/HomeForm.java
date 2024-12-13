@@ -828,10 +828,17 @@ public class HomeForm extends javax.swing.JFrame {
     }//GEN-LAST:event_jlbInfoMouseClicked
 
     private void jlbConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jlbConnectMouseClicked
-        // TODO add your handling code here:
+            // Đổi màu nền để phản hồi người dùng
         jPanelConnect.setBackground(Color.white);
-        //jPanelPIN.setBackground(new Color(240,240,240));
-        //jpnInfor.setBackground(new Color(240,240,240));
+
+        // Ngắt kết nối thẻ khi nhấn nút
+        ConnectCard connectCard = ConnectCard.getInstance();
+        connectCard.disconnect();
+
+        // Cập nhật trạng thái giao diện
+        jPanelPIN.setBackground(new Color(240, 240, 240)); // Ví dụ reset màu
+        jpnInfor.setBackground(new Color(240, 240, 240)); // Reset màu cho panel thông tin
+        
     }//GEN-LAST:event_jlbConnectMouseClicked
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed

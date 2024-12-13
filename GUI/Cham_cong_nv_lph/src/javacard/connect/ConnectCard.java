@@ -43,6 +43,7 @@ public class ConnectCard {
     private List<CardTerminal> terminals;
     
     private static ConnectCard instance;
+    private boolean isConnected = false;
     public static ConnectCard getInstance() {
         if (instance == null) {
             instance = new ConnectCard();
@@ -71,6 +72,20 @@ public class ConnectCard {
             return "Error";
         }
     }
+    public void disconnect() {
+    try {
+        if (card != null) {
+            card.disconnect(true); // Ngắt kết nối và reset thẻ
+            card = null; // Đặt về null để tránh tái sử dụng
+            channel = null; // Reset channel
+            JOptionPane.showMessageDialog(null, "Thẻ đã được thoát thành công!");
+        } else {
+            JOptionPane.showMessageDialog(null, "Không có thẻ nào đang được kết nối.");
+        }
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(null, "Lỗi khi thoát thẻ: " + ex.getMessage());
+    }
+ }
     
     
     public boolean verifyPin(String pin){

@@ -18,7 +18,7 @@ import javax.smartcardio.CardException;
  * @author Bawcs
  */
 public class LoginForm extends javax.swing.JFrame {
-
+    private boolean isConnected = false;
     private int firstUSE;
     private static int login_status = 0; 
 
@@ -181,7 +181,9 @@ public class LoginForm extends javax.swing.JFrame {
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void btnConnectMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnConnectMouseClicked
-        ConnectCard connect = new ConnectCard();
+        ConnectCard connect = ConnectCard.getInstance(); // Đảm bảo sử dụng singleton
+
+    if (!isConnected) { // Nếu chưa kết nối, tiến hành kết nối
         String response = connect.connectapplet();
         if (response.equals("Error")) {
             JOptionPane.showMessageDialog(null, "Kết nối bị lỗi");
@@ -194,10 +196,22 @@ public class LoginForm extends javax.swing.JFrame {
                 btnLogin.setEnabled(true);
                 firstUSE = (int) ((connect.data)[0] & 0xFF);
                 connect.setUp();
+                btnConnect.setText("Ngắt kết nối"); // Thay đổi nút thành "Ngắt kết nối"
+                isConnected = true; // Đặt cờ trạng thái thành đã kết nối
             } else {
                 JOptionPane.showMessageDialog(null, "Kết nối bị lỗi");
             }
         }
+    } else { // Nếu đã kết nối, tiến hành ngắt kết nối
+        connect.disconnect(); // Gọi hàm ngắt kết nối
+        JOptionPane.showMessageDialog(null, "Thẻ đã được ngắt kết nối");
+        btnConnect.setText("Kết nối"); // Thay đổi nút thành "Kết nối"
+        jlbLogin.setEnabled(false);
+        txtPIN.setEnabled(false);
+        checkbox.setEnabled(false);
+        btnLogin.setEnabled(false);
+        isConnected = false; // Đặt cờ trạng thái thành chưa kết nối
+    }
     }//GEN-LAST:event_btnConnectMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
