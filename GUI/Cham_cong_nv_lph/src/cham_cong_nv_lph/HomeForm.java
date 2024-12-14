@@ -10,6 +10,7 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -75,29 +76,7 @@ public class HomeForm extends javax.swing.JFrame {
         TextAreaLog.setEditable(false);
         showDate();
         showTime();
-       // Khởi tạo JTextArea để hiển thị lịch sử
-        attendanceHistoryArea = new JTextArea();
-        attendanceHistoryArea.setEditable(false);
-        attendanceHistoryArea.setRows(10);
-        attendanceHistoryArea.setColumns(30);
-        attendanceHistoryArea.setLineWrap(true);
-
-        // Đặt JTextArea vào JScrollPane
-        JScrollPane scrollPane = new JScrollPane(attendanceHistoryArea);
-        // Lấy kích thước màn hình (hoặc container chứa JScrollPane)
-        int panelWidth = getWidth();
-        int panelHeight = getHeight();
-
-        // Tính toán vị trí để căn giữa
-        int x = (panelWidth - 300) / 2+ 60;  // Tính toán vị trí x để căn giữa theo chiều ngang
-        int y = (panelHeight - 200) / 2 + 100;  // Tính toán vị trí y để căn giữa theo chiều dọc
-
-        // Đặt vị trí và kích thước cho scrollPane
-        scrollPane.setBounds(x, y, 300, 200);
-
-        // Sử dụng AbsoluteLayout
-        getContentPane().setLayout(null); 
-        getContentPane().add(scrollPane);
+       
     }
     void showDate(){
         Date date = new Date();
@@ -144,7 +123,7 @@ public class HomeForm extends javax.swing.JFrame {
     void inputTime(String dateString,String startTimeString,String endTimeString){
         try {
  
-            File f = new File("C:/smartcarddata.bin");
+            File f = new File("C:\\Users\\dell\\Documents\\NetBeansProjects\\Cham_cong_nv_lph\\smartcarddata.bin");
             FileOutputStream fo;
             ObjectOutputStream oStream = null;
             if (!f.exists()) {
@@ -172,24 +151,35 @@ public class HomeForm extends javax.swing.JFrame {
         } catch (IOException e) {
             System.out.println("javacard.HomeForm.inputTime()" + e);
         }
-    }
-    void outputTime(){
-        try {
-            File f = new File("C:/smartcarddata.bin");
-            FileInputStream fis = new FileInputStream(f);
-            ObjectInputStream inStream = new ObjectInputStream(fis);
-            Object s;
-            int i = 0;
-            TextAreaLog.setText("");
-            while (true) {
+    } 
+    void outputTime() {
+    try {
+        File f = new File("C:\\Users\\dell\\Documents\\NetBeansProjects\\Cham_cong_nv_lph\\smartcarddata.bin");
+        FileInputStream fis = new FileInputStream(f);
+        ObjectInputStream inStream = new ObjectInputStream(fis);
+
+        Object s;
+        int i = 0;
+        TextAreaLog.setText("");
+
+        while (true) {
+            try {
                 s = inStream.readObject();
                 String log = ++i + ":" + s.toString() + "\n";
                 TextAreaLog.append(log);
+            } catch (EOFException eof) {
+                // Kết thúc file, thoát khỏi vòng lặp
+                break;
             }
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println("javacard.HomeForm.outputTime()" + e);
         }
+        
+        inStream.close();
+        fis.close();
+
+    } catch (ClassNotFoundException | IOException e) {
+        System.out.println("javacard.HomeForm.outputTime() " + e);
     }
+} 
     private boolean rsaAuthentication() {
         try {
             PublicKey publicKeys = RSAData.getPublicKey();
@@ -853,65 +843,42 @@ public class HomeForm extends javax.swing.JFrame {
         jpanleAttendance.setVisible(true);
         jpnInfo.setVisible(false);
         jpnPIN.setVisible(false);
-        outputTime();
+        //outputTime();
     }//GEN-LAST:event_jlbPIN1MouseClicked
 
     private void btnAttendanceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAttendanceActionPerformed
         // TODO add your handling code here:
-    // Kiểm tra xem RSA có thành công không
-    if (rsaAuthentication()) {
-        String date = lableDate.getText(); // Lấy ngày hiện tại
-        String time = lableTime.getText(); // Lấy giờ hiện tại
-        String userId = "001"; 
-        String userName = "La phi hề"; // Lấy tên người dùng
-        String phone = "0123456789"; 
-        
-       
-        
-        // Lưu lịch sử điểm danh qua applet
-        ConnectCard connectCard = ConnectCard.getInstance();
-        String result = connectCard.saveAttendanceLog(userId, userName, date, phone);
-        
-        switch (CheckEnd) {
-    case 0:
-        // Điểm danh lần đầu
-        this.startTime = time;
-        this.CheckEnd = 1;
-        JOptionPane.showMessageDialog(null, "Điểm danh đến thành công! Chúc bạn một ngày làm việc vui vẻ");
-        JOptionPane.showMessageDialog(null, result); 
-        break;
-    case 1:
-        // Điểm danh lần thứ hai
-        inputTime(date, startTime, time);
-        outputTime();
-        this.CheckEnd = 2;
-        JOptionPane.showMessageDialog(null, "Điểm danh thành công!");
-        JOptionPane.showMessageDialog(null, result); 
-        break;
-    default:
-        // Đã điểm danh rồi
-        JOptionPane.showMessageDialog(null, "Bạn đã điểm danh ngày hôm nay! Vui lòng quay lại vào ngày mai");
-        
-        break;
-}
-        
-        
-        
-        // Cập nhật giao diện hiển thị lịch sử điểm danh
-        updateAttendanceHistory(date, time);
-    } else {
-        // Thông báo lỗi nếu RSA không thành công
-        System.out.println("RSA ERROR");
+    if(rsaAuthentication()){
+            String date = lableDate.getText();
+            String time = lableTime.getText();
+            switch (CheckEnd) {
+                case 0:
+                    this.startTime = time;
+                    this.CheckEnd = 1;
+                    JOptionPane.showMessageDialog(null, "Điểm danh đến thành công! Chúc bạn một ngày làm việc vui vẻ");
+                    break;
+                case 1:
+                    inputTime(date, startTime, time);
+                    outputTime();
+                    this.CheckEnd = 2;
+                    JOptionPane.showMessageDialog(null, "Điểm danh thành công!");
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(null, "Bạn đã điểm danh ngày hôm nay! Vui lòng quay lại vào ngày mai");
+                    break;
+            }
+            
+            
+        }
+        else{
+            System.out.println("RSA ERROR");
         }
     }//GEN-LAST:event_btnAttendanceActionPerformed
     
     
     
-    private void updateAttendanceHistory(String date, String time) {
-    // Cập nhật lịch sử điểm danh trong giao diện
-    String historyEntry = "Ngày: " + date + " | Giờ: " + time;
-    attendanceHistoryArea.append(historyEntry + "\n"); // attendanceHistoryArea là JTextArea hiển thị lịch sử
-}
+    
+    
     
     
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
